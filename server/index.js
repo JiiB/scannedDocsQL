@@ -1,10 +1,17 @@
 require('dotenv').config();
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
+const cors = require('cors');
 const schema = require('./schema/schema');
 const mongoose = require('mongoose');
 const fs = require('fs');
 const Document = require('./models/document');
+
+
+const app = express();
+
+// allow CORS
+app.use(cors());
 
 // Settings
 const folderPath = '../testData';
@@ -35,14 +42,16 @@ setInterval(() => {
                         displayName: file.split('.pdf')[0],
                         create_date: Date.now()
                     });
-                    document.save();
+                    if(file.indexOf('.pdf') !== -1) {
+                        document.save();
+                    }
                 }
             }
         });
 }, pollInterval);
 
 
-const app = express();
+
 
 app.use('/graphql', graphqlHTTP({
     schema,
