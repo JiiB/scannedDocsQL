@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^1.0.0",
+    "@material-ui/icons": "^1.0.0",
     "apollo-boost": "^0.1.6",
     "autoprefixer": "7.1.6",
     "babel-core": "6.26.0",
@@ -31,7 +33,6 @@
     "graphql-tag": "^2.9.2",
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
-    "material-ui": "^0.20.0",
     "node-sass": "^4.8.3",
     "object-assign": "4.1.1",
     "postcss-flexbugs-fixes": "3.2.0",

@@ -1,41 +1,48 @@
 import React, { Component } from "react";
-import Dialog from "material-ui/Dialog";
-import FlatButton from "material-ui/FlatButton";
-import TextField from "material-ui/TextField";
-
-const customContentStyle = {
-  width: "95%",
-  maxWidth: "400px"
-};
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
 
 export class EditDialog extends Component {
+  state = {
+    name: ""
+  };
 
+  componentWillReceiveProps() {
+    this.setState({ name: this.props.data.displayName });
+  }
+
+  updateTitle = event => {
+    this.setState({ name: event.target.value });
+  };
 
   render() {
     const { openHandler, closeHandler, data } = this.props;
-    console.log(this.props);
-    const actions = [
-      <FlatButton label="Cancel" secondary onClick={closeHandler} />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={closeHandler}
-      />
-    ];
 
     return (
       <div>
-        <Dialog
-          title="Dokumentname ändern"
-          actions={actions}
-          modal={true}
-          contentStyle={customContentStyle}
-          open={openHandler}
-        >
-          <TextField
-            hintText={data && data.displayName}
-            floatingLabelText="Name des Dokuments"
-          />
+        <Dialog open={openHandler} onClose={closeHandler}>
+          <DialogTitle id="alert-dialog-title">Dokument umbenennen</DialogTitle>
+          <DialogContent>
+            <TextField
+              placeholder={data && data.displayName}
+              fullWidth={true}
+              label="Name des Dokuments"
+              value={this.state.name}
+              onChange={event => this.updateTitle(event)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button color="secondary" onClick={closeHandler}>
+              Cancel
+            </Button>,
+            <Button color="primary" onClick={closeHandler}>
+              Submit
+            </Button>
+          </DialogActions>
         </Dialog>
       </div>
     );

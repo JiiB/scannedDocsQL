@@ -1,15 +1,20 @@
 import React, { Component } from "react";
-import CircularProgress from "material-ui/CircularProgress";
-import IconMenu from "material-ui/IconMenu";
-import MenuItem from "material-ui/MenuItem";
-import Eye from "material-ui/svg-icons/image/remove-red-eye";
-import Delete from "material-ui/svg-icons/action/delete";
-import Social from "material-ui/svg-icons/social/share";
-import Edit from "material-ui/svg-icons/image/edit";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import EyeIcon from "@material-ui/icons/RemoveRedEye";
+import DeleteIcon from "@material-ui/icons/Delete";
+import SocialIcon from "@material-ui/icons/Share";
+import EditIcon from "@material-ui/icons/Edit";
+import DescriptionIcon from "@material-ui/icons/Description";
 import EditDialog from "../EditDialog";
+import Drawer from "@material-ui/core/Drawer";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Avatar from "@material-ui/core/Avatar";
+import Badge from "@material-ui/core/Badge";
 
-import { List, ListItem } from "material-ui/List";
-import NavigationMore from "material-ui/svg-icons/navigation/more-vert";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 import styles from "./styles.scss";
 import { gql } from "apollo-boost";
@@ -28,63 +33,59 @@ const getDocumentsQuery = gql`
 
 export class DocumentList extends Component {
   state = {
-    open: false,
-    editDialogData: null
+    openDrawer: false,
+    openDialog: false,
+    editDialogData: {
+      id: "",
+      name: "",
+      displayName: "",
+      create_date: ""
+    }
   };
 
-  handleOpen = doc => {
+  openDrawerHandler = doc => {
     this.setState({
       editDialogData: doc,
-      open: true
+      openDrawer: true
     });
-    console.log(doc);
   };
 
-  handleClose = () => {
-    this.setState({ open: false });
+  closeDrawerHandler = () => {
+    this.setState({ openDrawer: false });
+  };
+
+  openDialogHandler = () => {
+    this.setState({
+      openDialog: true,
+      openDrawer: false
+    });
+  };
+
+  closeDialogHandler = () => {
+    this.setState({ openDialog: false });
   };
 
   render() {
     const { data } = this.props;
-    let docs = (
-      <div className={styles.Text_Center}>
-        <CircularProgress />
-      </div>
-    );
+    let docs = <div className={styles.Text_Center}>{<CircularProgress />}</div>;
     if (!data.loading) {
       docs = data.documents.map(doc => {
-        let cssStyles = styles.DisplayBlock;
+        let newBadge = null;
         if (parseFloat(doc.create_date) > Date.now() - 120000) {
-          cssStyles = [styles.DisplayBlock, styles.New].join(" ");
+          newBadge = <Badge badgeContent={"🔔"} color="primary" />;
         }
         return (
-          <IconMenu
+          <ListItem
             key={doc.id}
-            className={cssStyles}
-            iconButtonElement={
-              <ListItem
-                primaryText={doc.displayName}
-                secondaryText={doc.name}
-                rightIcon={<NavigationMore />}
-              />
-            }
-            anchorOrigin={{ horizontal: "right", vertical: "top" }}
-            targetOrigin={{ horizontal: "right", vertical: "top" }}
+            onClick={() => this.openDrawerHandler(doc)}
+            button
           >
-            <MenuItem
-              primaryText="Ansehen"
-              href={`http://192.168.1.127/scan/${doc.name}`}
-              target="_blank"
-              leftIcon={<Eye />}
-            />
-            <MenuItem primaryText="Teilen" leftIcon={<Social />} />
-            <MenuItem
-              primaryText="Bearbeiten"
-              onClick={() => this.handleOpen(doc)}
-              leftIcon={<Edit />}
-            />
-            <MenuItem primaryText="Löschen" leftIcon={<Delete />} />
-          </IconMenu>
+            <Avatar>
+              <DescriptionIcon />
+            </Avatar>
+            <ListItemText primary={doc.displayName} secondary={doc.name} />
+            {newBadge}
+          </ListItem>
         );
       });
     }
@@ -93,10 +94,47 @@ export class DocumentList extends Component {
       <React.Fragment>
         <div />
         <List>{docs}</List>
-        <EditDialog 
-          data={this.state.editDialogData} 
-          openHandler={this.state.open} 
-          closeHandler={this.handleClose}
+        <Drawer
+          anchor="bottom"
+          open={this.state.openDrawer}
+          onClose={this.closeDrawerHandler}
+        >
+          <List>
+            <ListItem
+              button
+              component="a"
+              target="_blank"
+              href={"/scan/" + this.state.editDialogData.name}
+            >
+              <ListItemIcon>
+                <EyeIcon />
+              </ListItemIcon>
+              <ListItemText primary="Ansehen" />
+            </ListItem>
+            <ListItem button onClick={this.openDialogHandler}>
+              <ListItemIcon>
+                <EditIcon />
+              </ListItemIcon>
+              <ListItemText primary="Bearbeiten" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <SocialIcon />
+              </ListItemIcon>
+              <ListItemText primary="E-Mail senden" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Löschen" />
+            </ListItem>
+          </List>
+        </Drawer>
+        <EditDialog
+          data={this.state.editDialogData}
+          openHandler={this.state.openDialog}
+          closeHandler={this.closeDialogHandler}
         />
       </React.Fragment>
     );
