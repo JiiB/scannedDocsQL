@@ -1,15 +1,16 @@
 import React, { Component } from "react";
+import axios from "../../axios-mail";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Snackbar from "@material-ui/core/Snackbar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { updateDocumentMutation, getDocumentsQuery } from "../../queries";
-import { graphql } from "react-apollo";
+import styles from "./styles.css";
+import Snackbar from "@material-ui/core/Snackbar";
+import { MAIL_REGEX } from "../../constants";
 
-export class EditDialog extends Component {
+export class MailDialog extends Component {
   state = {
     snackbarState: false,
     snackbarText: "",
@@ -18,7 +19,12 @@ export class EditDialog extends Component {
   };
 
   updateTitleHandler = event => {
-    const error = event.target.value.length > 0 ? false : true;
+    let error = false;
+    if (event.target.value.length > 0 && MAIL_REGEX.test(event.target.value)) {
+      error = false;
+    } else {
+      error = true;
+    }
     this.setState({ name: event.target.value, inputError: error });
   };
 
@@ -28,22 +34,29 @@ export class EditDialog extends Component {
 
   submitFormHandler = event => {
     event.preventDefault();
-    if (this.state.name.length > 0) {
-      this.props.mutate({
-        variables: {
-          id: this.props.data.id,
-          displayName: this.state.name
-        },
-        refetchQueries: [{ query: getDocumentsQuery }]
-      });
-      this.setState({
-        snackbarText: "Name aktualisiert!",
-        snackbarState: true
-      });
+
+    if (this.state.name.length > 0 && !this.state.inputError) {
+      const postData = {
+        email: this.state.name,
+        ...this.props.data
+      };
+      console.log("send email", postData);
+
+      axios
+        .post("/mail", postData, {
+          "Content-Type": "application/json"
+        })
+        .then(res => {
+          this.setState({
+            snackbarText: "E-Mail wird versendet...",
+            snackbarState: true
+          });
+        });
+
       this.props.closeHandler();
     } else {
       this.setState({
-        snackbarText: "Bitte gültigen Namen angeben!",
+        snackbarText: "Bitte gültige E-Mail Adresse angeben!",
         snackbarState: true
       });
     }
@@ -55,23 +68,24 @@ export class EditDialog extends Component {
 
   render() {
     const { openHandler, closeHandler, data } = this.props;
-
     return (
       <div>
-        <Dialog
-          open={openHandler}
-          onClose={closeHandler}
-          onEntering={this.dialogOpenedHandler}
-        >
-          <DialogTitle id="alert-dialog-title">Dokument umbenennen</DialogTitle>
+        <Dialog open={openHandler} onClose={closeHandler}>
+          <DialogTitle id="alert-dialog-title">E-Mail senden</DialogTitle>
           <DialogContent>
-            <form onSubmit={event => this.submitFormHandler(event)}>
+            <div className={styles.DialogInfo}>
+              Willst du das Dokument <strong>{data && data.displayName}</strong>{" "}
+              per E-Mail verschicken?
+            </div>
+            <form onSubmit={this.submitFormHandler}>
               <TextField
+                autoComplete="email"
                 error={this.state.inputError}
-                placeholder={data && data.displayName}
+                required={true}
+                placeholder="E-Mail Adresse"
                 fullWidth={true}
-                label="Name des Dokuments"
-                value={this.state.name}
+                label="E-Mail des Empfängers"
+                type="email"
                 onChange={event => this.updateTitleHandler(event)}
               />
             </form>
@@ -103,4 +117,4 @@ export class EditDialog extends Component {
   }
 }
 
-export default graphql(updateDocumentMutation)(EditDialog);
+export default MailDialog;

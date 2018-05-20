@@ -6,6 +6,7 @@ import SocialIcon from "@material-ui/icons/Share";
 import EditIcon from "@material-ui/icons/Edit";
 import DescriptionIcon from "@material-ui/icons/Description";
 import EditDialog from "../EditDialog";
+import MailDialog from "../MailDialog";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -14,27 +15,16 @@ import Badge from "@material-ui/core/Badge";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 import styles from "./styles.scss";
-import { gql } from "apollo-boost";
+import { getDocumentsQuery } from "../../queries";
 import { graphql } from "react-apollo";
-
-const getDocumentsQuery = gql`
-  {
-    documents {
-      id
-      name
-      displayName
-      create_date
-    }
-  }
-`;
 
 export class DocumentList extends Component {
   state = {
     openDrawer: false,
-    openDialog: false,
+    openEditDialog: false,
+    openMailDialog: false,
     editDialogData: {
       id: "",
       name: "",
@@ -54,15 +44,26 @@ export class DocumentList extends Component {
     this.setState({ openDrawer: false });
   };
 
-  openDialogHandler = () => {
+  openEditDialogHandler = () => {
     this.setState({
-      openDialog: true,
+      openEditDialog: true,
       openDrawer: false
     });
   };
 
-  closeDialogHandler = () => {
-    this.setState({ openDialog: false });
+  closeEditDialogHandler = () => {
+    this.setState({ openEditDialog: false });
+  };
+
+  openMailDialogHandler = () => {
+    this.setState({
+      openMailDialog: true,
+      openDrawer: false
+    });
+  };
+
+  closeMailDialogHandler = () => {
+    this.setState({ openMailDialog: false });
   };
 
   render() {
@@ -111,13 +112,13 @@ export class DocumentList extends Component {
               </ListItemIcon>
               <ListItemText primary="Ansehen" />
             </ListItem>
-            <ListItem button onClick={this.openDialogHandler}>
+            <ListItem button onClick={this.openEditDialogHandler}>
               <ListItemIcon>
                 <EditIcon />
               </ListItemIcon>
               <ListItemText primary="Bearbeiten" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={this.openMailDialogHandler}>
               <ListItemIcon>
                 <SocialIcon />
               </ListItemIcon>
@@ -133,8 +134,13 @@ export class DocumentList extends Component {
         </Drawer>
         <EditDialog
           data={this.state.editDialogData}
-          openHandler={this.state.openDialog}
-          closeHandler={this.closeDialogHandler}
+          openHandler={this.state.openEditDialog}
+          closeHandler={this.closeEditDialogHandler}
+        />
+        <MailDialog
+          data={this.state.editDialogData}
+          openHandler={this.state.openMailDialog}
+          closeHandler={this.closeMailDialogHandler}
         />
       </React.Fragment>
     );

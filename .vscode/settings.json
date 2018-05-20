@@ -1,6 +1,7 @@
 {
-    "files.associations": {
-        "*.js": "javascriptreact",
-        "**/server/**/*.js": "javascript"
-    },
+  "files.associations": {
+    "*.js": "javascriptreact",
+    "**/server/**/*.js": "javascript"
+  },
+  "editor.tabSize": 2
 }
