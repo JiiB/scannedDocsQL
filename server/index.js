@@ -87,7 +87,7 @@ app.post('/mail', function (req, res) {
     from: `"Scanner 🖨" <${process.env.EMAIL_NAME}>`,
     to: req.body.email,
     subject: `Dokument PDF "${req.body.displayName}"`,
-    text: 'Doukment PDF',
+    text: 'Dokument PDF',
     attachments: [{
       filename: req.body.name,
       path: folderPath + '/' + req.body.name,
