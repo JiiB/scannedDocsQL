@@ -4,3 +4,9 @@
     width: 95%;
     margin-top: 15px;
 }
+
+.AlignRight {
+    flex-grow: 1;
+    justify-content: flex-end;
+    display: flex;
+}

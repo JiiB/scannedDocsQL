@@ -47,7 +47,8 @@ setInterval(() => {
           let document = new Document({
             name: file,
             displayName: file.split('.pdf')[0],
-            create_date: Date.now()
+            create_date: Date.now(),
+            active: true
           });
           if (file.indexOf('.pdf') !== -1) {
             document.save();

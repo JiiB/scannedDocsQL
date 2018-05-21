@@ -7,6 +7,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import DescriptionIcon from "@material-ui/icons/Description";
 import EditDialog from "../EditDialog";
 import MailDialog from "../MailDialog";
+import DeleteDialog from "../DeleteDialog";
 import Drawer from "@material-ui/core/Drawer";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -16,15 +17,14 @@ import Badge from "@material-ui/core/Badge";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 
-import styles from "./styles.scss";
-import { getDocumentsQuery } from "../../queries";
-import { graphql } from "react-apollo";
+import styles from "./styles.css";
 
 export class DocumentList extends Component {
   state = {
     openDrawer: false,
     openEditDialog: false,
     openMailDialog: false,
+    openDeleteDialog: false,
     editDialogData: {
       id: "",
       name: "",
@@ -44,6 +44,7 @@ export class DocumentList extends Component {
     this.setState({ openDrawer: false });
   };
 
+  // EditDialog
   openEditDialogHandler = () => {
     this.setState({
       openEditDialog: true,
@@ -55,6 +56,7 @@ export class DocumentList extends Component {
     this.setState({ openEditDialog: false });
   };
 
+  // MailDialog
   openMailDialogHandler = () => {
     this.setState({
       openMailDialog: true,
@@ -66,7 +68,20 @@ export class DocumentList extends Component {
     this.setState({ openMailDialog: false });
   };
 
+  // DeleteDialog
+  openDeleteDialogHandler = () => {
+    this.setState({
+      openDeleteDialog: true,
+      openDrawer: false
+    });
+  };
+
+  closeDeleteDialogHandler = () => {
+    this.setState({ openDeleteDialog: false });
+  };
+
   render() {
+    console.log(this.props);
     const { data } = this.props;
     let docs = <div className={styles.Text_Center}>{<CircularProgress />}</div>;
     if (!data.loading) {
@@ -76,17 +91,19 @@ export class DocumentList extends Component {
           newBadge = <Badge badgeContent={"🔔"} color="primary" />;
         }
         return (
-          <ListItem
-            key={doc.id}
-            onClick={() => this.openDrawerHandler(doc)}
-            button
-          >
-            <Avatar>
-              <DescriptionIcon />
-            </Avatar>
-            <ListItemText primary={doc.displayName} secondary={doc.name} />
-            {newBadge}
-          </ListItem>
+          doc.active && (
+            <ListItem
+              key={doc.id}
+              onClick={() => this.openDrawerHandler(doc)}
+              button
+            >
+              <Avatar>
+                <DescriptionIcon />
+              </Avatar>
+              <ListItemText primary={doc.displayName} secondary={doc.name} />
+              {newBadge}
+            </ListItem>
+          )
         );
       });
     }
@@ -124,7 +141,7 @@ export class DocumentList extends Component {
               </ListItemIcon>
               <ListItemText primary="E-Mail senden" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={this.openDeleteDialogHandler}>
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>
@@ -142,9 +159,14 @@ export class DocumentList extends Component {
           openHandler={this.state.openMailDialog}
           closeHandler={this.closeMailDialogHandler}
         />
+        <DeleteDialog
+          data={this.state.editDialogData}
+          openHandler={this.state.openDeleteDialog}
+          closeHandler={this.closeDeleteDialogHandler}
+        />
       </React.Fragment>
     );
   }
 }
 
-export default graphql(getDocumentsQuery)(DocumentList);
+export default DocumentList;

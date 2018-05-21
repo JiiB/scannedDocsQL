@@ -10,7 +10,8 @@ const {
   GraphQLString,
   GraphQLSchema,
   GraphQLList,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLBoolean
 } = graphql;
 
 const DocumentType = new GraphQLObjectType({
@@ -27,6 +28,9 @@ const DocumentType = new GraphQLObjectType({
     },
     create_date: {
       type: GraphQLString
+    },
+    active: {
+      type: GraphQLBoolean
     },
   })
 });
@@ -103,6 +107,23 @@ const Mutation = new GraphQLObjectType({
 
         return Document.findByIdAndUpdate(args.id, {
           displayName: args.displayName
+        });
+      }
+    },
+    deactivateDocument: {
+      type: DocumentType,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID)
+        },
+        active: {
+          type: new GraphQLNonNull(GraphQLBoolean)
+        }
+      },
+      resolve(parent, args) {
+
+        return Document.findByIdAndUpdate(args.id, {
+          active: args.active
         });
       }
     },

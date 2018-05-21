@@ -7,6 +7,7 @@ const getDocumentsQuery = gql`
       name
       displayName
       create_date
+      active
     }
   }
 `;
@@ -21,4 +22,19 @@ const updateDocumentMutation = gql`
   }
 `;
 
-export { getDocumentsQuery, updateDocumentMutation };
+const deactivateDocumentMutation = gql`
+  mutation($id: ID!) {
+    deactivateDocument(id: $id, active: false) {
+      id
+      displayName
+      create_date
+      active
+    }
+  }
+`;
+
+export {
+  getDocumentsQuery,
+  updateDocumentMutation,
+  deactivateDocumentMutation
+};
