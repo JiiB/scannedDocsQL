@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Settings
-const folderPath = '../testData';
+const folderPath = '../html/scan';
 const pollInterval = 5000;
 
 // connect to mlab db
