@@ -84,7 +84,12 @@ export class DocumentList extends Component {
     console.log(this.props);
     const { data } = this.props;
     let docs = <div className={styles.Text_Center}>{<CircularProgress />}</div>;
-    if (!data.loading) {
+    if (
+      !data.loading &&
+      data &&
+      data.documents &&
+      Array.isArray(data.documents)
+    ) {
       docs = data.documents.map(doc => {
         let newBadge = null;
         if (parseFloat(doc.create_date) > Date.now() - 120000) {
