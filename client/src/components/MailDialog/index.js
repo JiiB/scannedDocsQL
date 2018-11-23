@@ -15,6 +15,7 @@ export class MailDialog extends Component {
     snackbarState: false,
     snackbarText: "",
     name: "",
+    tags: "",
     inputError: false
   };
 
@@ -28,6 +29,12 @@ export class MailDialog extends Component {
     this.setState({ name: event.target.value, inputError: error });
   };
 
+  updateTagsHandler = event => {
+    this.setState({
+      tags: event.target.value
+    });
+  };
+
   dialogOpenedHandler = () => {
     this.setState({ name: this.props.data.displayName });
   };
@@ -38,6 +45,7 @@ export class MailDialog extends Component {
     if (this.state.name.length > 0 && !this.state.inputError) {
       const postData = {
         email: this.state.name,
+        tags: this.state.tags,
         ...this.props.data
       };
       console.log("send email", postData);
@@ -88,12 +96,22 @@ export class MailDialog extends Component {
                 type="email"
                 onChange={event => this.updateTitleHandler(event)}
               />
+              <TextField
+                error={this.state.inputError}
+                required={false}
+                placeholder="Tags zB. Lohnblatt, Brief, Name"
+                fullWidth={true}
+                label="Tags"
+                type="name"
+                onChange={event => this.updateTagsHandler(event)}
+              />
             </form>
           </DialogContent>
           <DialogActions>
             <Button color="secondary" onClick={closeHandler}>
               Cancel
-            </Button>,
+            </Button>
+            ,
             <Button color="primary" onClick={this.submitFormHandler}>
               Submit
             </Button>
