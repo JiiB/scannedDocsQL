@@ -1,0 +1,10 @@
+{
+  "apps": [
+    {
+      "name": "scannedDocsQL-app",
+      "script": "yarn",
+      "args": "start",
+      "exec_mode": "cluster"
+    }
+  ]
+}
